@@ -80,6 +80,7 @@ type Building = {
 type NavMode = {
   id: string | number;
   name: string;
+  fromThrough: boolean;
 };
 
 type ViewStateLite = {
@@ -113,10 +114,10 @@ export default function RouteEditor(): JSX.Element {
 
   // NavMode (Sets)
   const [curNavModeNodes, setCurNavModeNodes] = useState<Set<string>>(
-    () => new Set(),
+    () => new Set()
   );
   const [curNavModeEdges, setCurNavModeEdges] = useState<Set<string>>(
-    () => new Set(),
+    () => new Set()
   );
   const [showOnlyNavMode, setShowOnlyNavMode] = useState<boolean>(false);
   const [curNavMode, setCurNavMode] = useState<string | number | null>(null);
@@ -127,7 +128,7 @@ export default function RouteEditor(): JSX.Element {
     string | number | null
   >(null);
   const [curBuildingNodes, setCurBuildingNodes] = useState<Set<string>>(
-    () => new Set(),
+    () => new Set()
   );
   const [curBuildingOrder, setCurBuildingOrder] = useState<string[]>([]);
   const [showNavModeModal, setShowNavModeModal] = useState<boolean>(false);
@@ -171,7 +172,7 @@ export default function RouteEditor(): JSX.Element {
     const edges = curEdgeIndexRef.current;
     return edges.some(
       (e) =>
-        curNavModeEdges.has(e.key) && (e.from === nodeId || e.to === nodeId),
+        curNavModeEdges.has(e.key) && (e.from === nodeId || e.to === nodeId)
     );
   };
 
@@ -181,7 +182,7 @@ export default function RouteEditor(): JSX.Element {
     FeatureCollection<LineString, GeoJsonProperties>
   >(() => {
     const coord = new Map<string, [number, number]>(
-      markers.map((m) => [m.id, [m.lng, m.lat]]),
+      markers.map((m) => [m.id, [m.lng, m.lat]])
     );
 
     const features: Array<Feature<LineString, GeoJsonProperties>> = [];
@@ -239,7 +240,7 @@ export default function RouteEditor(): JSX.Element {
         "line-opacity": 0.95,
       },
     }),
-    [],
+    []
   );
 
   const oneWayArrows = useMemo<SymbolLayerSpecification>(
@@ -263,7 +264,7 @@ export default function RouteEditor(): JSX.Element {
         "text-halo-width": 1,
       },
     }),
-    [],
+    []
   );
 
   /** ---------------- Graph ops ---------------- */
@@ -308,7 +309,7 @@ export default function RouteEditor(): JSX.Element {
 
     setCurNavModeEdges((prev) => {
       const remove = new Set(
-        edgeIndex.filter((e) => e.from === id || e.to === id).map((e) => e.key),
+        edgeIndex.filter((e) => e.from === id || e.to === id).map((e) => e.key)
       );
       if (remove.size === 0) return prev;
       return new Set([...prev].filter((k) => !remove.has(k)));
@@ -337,7 +338,7 @@ export default function RouteEditor(): JSX.Element {
   function setNavModeNode(
     id: string,
     status: boolean,
-    navModeId: string | number | null,
+    navModeId: string | number | null
   ) {
     if (!navModeId) return toast.error("Select a navigation mode first.");
 
@@ -432,7 +433,7 @@ export default function RouteEditor(): JSX.Element {
     if (isSelected) {
       const resp = await detachNodeFromBuilding(
         String(currentBuilding),
-        nodeId,
+        nodeId
       );
       if (!resp) return toast.error("Failed to detach node.");
 
@@ -452,7 +453,7 @@ export default function RouteEditor(): JSX.Element {
         return next;
       });
       setCurBuildingOrder((prev) =>
-        prev.includes(nodeId) ? prev : [...prev, nodeId],
+        prev.includes(nodeId) ? prev : [...prev, nodeId]
       );
     }
   }
@@ -462,11 +463,11 @@ export default function RouteEditor(): JSX.Element {
 
     const ids = Array.from(curBuildingNodes);
     const results = await Promise.allSettled(
-      ids.map((nid) => detachNodeFromBuilding(String(currentBuilding), nid)),
+      ids.map((nid) => detachNodeFromBuilding(String(currentBuilding), nid))
     );
 
     const succeeded = ids.filter(
-      (_, i) => results[i].status === "fulfilled" && (results[i] as any).value,
+      (_, i) => results[i].status === "fulfilled" && (results[i] as any).value
     );
 
     if (succeeded.length === ids.length) {
@@ -480,7 +481,7 @@ export default function RouteEditor(): JSX.Element {
         return next;
       });
       setCurBuildingOrder((prev) =>
-        prev.filter((id) => !succeeded.includes(id)),
+        prev.filter((id) => !succeeded.includes(id))
       );
     }
   }
@@ -494,7 +495,7 @@ export default function RouteEditor(): JSX.Element {
 
     if (resp) {
       setMarkers((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, isBlueLight: nextValue } : m)),
+        prev.map((m) => (m.id === id ? { ...m, isBlueLight: nextValue } : m))
       );
     } else {
       toast.error("Could not set marker as Blue Light.");
@@ -527,7 +528,7 @@ export default function RouteEditor(): JSX.Element {
       return void setNavModeNode(
         id,
         !isNodeSelectedNavMode(id),
-        curNavModeRef.current,
+        curNavModeRef.current
       );
     if (modeRef.current === "blueLight") return void setBlueLightStatus(id);
 
@@ -546,7 +547,7 @@ export default function RouteEditor(): JSX.Element {
     const ok = await editNode(id, lng, lat);
     if (ok) {
       setMarkers((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, lng, lat } : m)),
+        prev.map((m) => (m.id === id ? { ...m, lng, lat } : m))
       );
     } else {
       toast.error("Node could not be edited.");
@@ -595,7 +596,7 @@ export default function RouteEditor(): JSX.Element {
         lng: Number(n.lng),
         lat: Number(n.lat),
         isBlueLight: Boolean(n.isBlueLight),
-      })),
+      }))
     );
 
     setEdgeIndex(
@@ -604,7 +605,7 @@ export default function RouteEditor(): JSX.Element {
         from: String(e.from),
         to: String(e.to),
         biDirectional: Boolean(e.biDirectional),
-      })),
+      }))
     );
   }
 
@@ -657,7 +658,7 @@ export default function RouteEditor(): JSX.Element {
         id: m.id,
         properties: { id: m.id },
         geometry: { type: "Point", coordinates: [m.lng, m.lat] },
-      }),
+      })
     );
 
     const data: FeatureCollection = {
@@ -881,6 +882,32 @@ export default function RouteEditor(): JSX.Element {
         </button>
       </div>
 
+      {mode === "select" && (
+        <div className="absolute z-20 top-16 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow flex items-center gap-3">
+          <span className="text-sm font-medium">Bi Directional Mode</span>
+          <button
+            onClick={() => {
+              setBiDirectionalEdges(!biDirectionalEdges);
+            }}
+            className={`px-2 py-1 rounded ${
+              !biDirectionalEdges ? "bg-red-600 text-white" : "bg-gray-200"
+            }`}
+          >
+            {biDirectionalEdges ? "On" : "Off"}
+          </button>
+
+          {!biDirectionalEdges ? (
+            <>
+              <div className="mx-2 w-px h-5 bg-gray-300" />
+              <span className="text-sm font-medium">
+                Note: The order of marker selection decides the direction of the
+                edge!
+              </span>
+            </>
+          ) : null}
+        </div>
+      )}
+
       {/* Nav mode selector (left, under toolbar) */}
       {mode === "navMode" && (
         <div className="absolute z-20 top-16 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow flex flex-wrap items-center gap-3">
@@ -979,8 +1006,8 @@ export default function RouteEditor(): JSX.Element {
             const colorClass = isBuildingSel
               ? "bg-amber-500"
               : isNavModeSel || isDrawSel || isBlueLightSel
-                ? "bg-red-600"
-                : "bg-blue-600";
+              ? "bg-red-600"
+              : "bg-blue-600";
 
             return (
               <Marker

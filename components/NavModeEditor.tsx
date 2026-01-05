@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { addNavMode, editNavMode, deleteNavMode } from "../lib/icmapsApi";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 type NavMode = {
   id: string | number;
   name: string;
+  fromThrough: boolean;
 };
 
 type Props = {
@@ -27,6 +29,7 @@ type Props = {
 
 export default function NavModes({ navModes, getNavModes }: Props) {
   const [currentName, setCurrentName] = useState<string>("");
+  const [curFromThrough, setCurFromThrough] = useState<boolean>(false);
 
   const [curEditId, setCurEditId] = useState<string | number | null>(null);
   const [curEditName, setCurEditName] = useState<string>("");
@@ -81,14 +84,14 @@ export default function NavModes({ navModes, getNavModes }: Props) {
       return toast.error("Can't have duplicate names!");
     }
 
-    const resp: any = await addNavMode(trimmed);
+    const resp: any = await addNavMode(trimmed, curFromThrough);
     if (resp?.status === 200) {
       setCurrentName("");
       await getNavModes();
       toast.success("NavMode added!");
     } else {
       toast.error(
-        resp?.data?.message ?? resp?.message ?? "Failed to add NavMode.",
+        resp?.data?.message ?? resp?.message ?? "Failed to add NavMode."
       );
     }
   }
@@ -105,6 +108,20 @@ export default function NavModes({ navModes, getNavModes }: Props) {
             value={currentName}
             onChange={(e) => setCurrentName(e.target.value)}
           />
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="airplane-mode"
+              value={curFromThrough ? "on" : "off"}
+              onClick={() => {
+                setCurFromThrough((cur) => {
+                  return !cur;
+                });
+              }}
+            />
+            <Label htmlFor="airplane-mode" className="w-30">
+              Through building routing
+            </Label>
+          </div>
           <Button
             type="button"
             className="shrink-0"
@@ -116,7 +133,7 @@ export default function NavModes({ navModes, getNavModes }: Props) {
       </div>
 
       {/* List */}
-      <div className="w-full mt-4">
+      <div className="w-full ">
         <div className="rounded-lg border bg-background">
           {navModes.length === 0 ? (
             <div className="p-4 text-sm text-muted-foreground">
@@ -132,9 +149,24 @@ export default function NavModes({ navModes, getNavModes }: Props) {
                   <span className="text-sm font-medium">{m.name}</span>
 
                   <div className="flex items-center gap-2">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="airplane-mode"
+                        value={m.fromThrough ? "on" : "off"}
+                        onClick={() => {
+                          setCurFromThrough((cur) => {
+                            return !cur;
+                          });
+                        }}
+                      />
+                      <Label htmlFor="airplane-mode" className="w-30">
+                        Through building routing
+                      </Label>
+                    </div>
                     <Button
                       type="button"
-                      variant="secondary"
+                      variant="default"
+                      className="bg-green-800"
                       onClick={() => {
                         setCurEditId(m.id);
                         setCurEditName(m.name);
@@ -176,6 +208,10 @@ export default function NavModes({ navModes, getNavModes }: Props) {
                 if (e.key === "Enter") void editNavModeHandler();
               }}
             />
+            <div className="flex items-center space-x-2">
+              <Switch id="airplane-mode" />
+              <Label htmlFor="airplane-mode">Airplane Mode</Label>
+            </div>
             <Button type="button" onClick={editNavModeHandler}>
               Submit
             </Button>
