@@ -153,9 +153,13 @@ export const addNavMode = async (name: string, fromThrough: boolean) => {
   return apiClient.post("/api/navmode", { name, fromThrough });
 };
 
-export const editNavMode = async (id: string, name: string) => {
+export const editNavMode = async (
+  id: string,
+  name: string,
+  fromThrough: boolean
+) => {
   // old: PUT /navmode/
-  return apiClient.put("/api/navmode", { id, name });
+  return apiClient.put("/api/navmode", { id, name, fromThrough });
 };
 
 export const deleteNavMode = async (id: string) => {

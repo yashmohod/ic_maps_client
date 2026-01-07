@@ -13,7 +13,7 @@ import {
 } from "@vis.gl/react-maplibre";
 import toast, { Toaster } from "react-hot-toast";
 import "maplibre-gl/dist/maplibre-gl.css";
-
+import { useAppTheme } from "@/hooks/use-app-theme";
 import {
   getAllBuildings,
   getAllNavModes,
@@ -29,10 +29,13 @@ import {
   IconArrowBadgeDownFilled,
   IconArrowsMaximize,
   IconArrowsMinimize,
+  IconLogin2,
 } from "@tabler/icons-react";
 
 import NavModeMap from "../components/NavMode";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 /** ---------------- Types ---------------- */
 
@@ -152,7 +155,7 @@ export default function NavigationMap(): JSX.Element {
 
   const [lastGeoMsg, setLastGeoMsg] = useState<string>("");
   const [useCompass, setUseCompass] = useState<boolean>(false);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  // const [isDark, setIsDarkMode] = useState<boolean>(false);
 
   const [curBuildingPoly, setCurBuildingPoly] =
     useState<GeoJSONFeatureCollection | null>(null);
@@ -169,29 +172,26 @@ export default function NavigationMap(): JSX.Element {
     return buildings.find((b) => `${b.id}` === `${selectedDest}`) ?? null;
   }, [buildings, selectedDest]);
 
-  function toggleDarkMode() {
-    // setIsDarkMode((prev) => !prev);
-    toggleSidebar();
-  }
+  const { isDark, toggleTheme } = useAppTheme();
 
   const stageDetails =
     STAGE_DETAILS[mapStage] ?? STAGE_DETAILS[MAP_STAGES.IDLE];
 
-  const mapStyleUrl = isDarkMode
+  const mapStyleUrl = isDark
     ? "https://api.maptiler.com/maps/dataviz-dark/style.json?key=ezFqZj4n29WctcwDznlR"
     : "https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR";
 
-  const surfacePanelClass = isDarkMode
+  const surfacePanelClass = isDark
     ? "border-white/10 bg-[#0b1f3a]/90 text-white"
     : "border-white/70 bg-white/95 text-slate-900";
 
-  const surfaceSubtleClass = isDarkMode
+  const surfaceSubtleClass = isDark
     ? "bg-[#132c4f]/80 text-slate-100"
     : "bg-slate-50/70 text-slate-600";
 
-  const borderMutedClass = isDarkMode ? "border-white/15" : "border-slate-200";
+  const borderMutedClass = isDark ? "border-white/15" : "border-slate-200";
 
-  const selectBaseClass = isDarkMode
+  const selectBaseClass = isDark
     ? "border-white/15 bg-[#091830] text-white"
     : "border-slate-200 bg-white text-slate-800";
 
@@ -1029,11 +1029,11 @@ export default function NavigationMap(): JSX.Element {
   return (
     <div
       className={`relative h-screen w-full ${
-        isDarkMode ? "bg-[#041631] text-white" : "bg-slate-50 text-slate-900"
+        isDark ? "bg-[#041631] text-white" : "bg-slate-50 text-slate-900"
       }`}
     >
       <Toaster position="top-right" reverseOrder />
-      <AppSidebar />
+      {/* <AppSidebar /> */}
 
       {/* Top brand + search bar */}
       <div className="absolute inset-x-2 top-3 z-30 md:left-1/2 md:w-[720px] md:-translate-x-1/2">
@@ -1043,15 +1043,9 @@ export default function NavigationMap(): JSX.Element {
               transition transform hover:scale-[1.03] active:scale-95`}
             onClick={toggleDarkMode}
           >
-            {/* <button
-              type="button"
-              aria-label={
-                isDarkMode ? "Switch to light mode" : "Switch to dark mode"
-              }
-            > */}
             <Image
               src={
-                isDarkMode
+                isDark
                   ? "/assets/ic_logo_up_dark.png"
                   : "/assets/ic_logo_up.png"
               }
@@ -1060,7 +1054,6 @@ export default function NavigationMap(): JSX.Element {
               height={40}
               className="max-h-10 w-auto"
             />
-            {/* </button> */}
           </div>
 
           <div
@@ -1070,7 +1063,7 @@ export default function NavigationMap(): JSX.Element {
               <select
                 id="search-dest"
                 className={`w-full rounded-2xl border px-3 py-3 text-sm font-medium transition focus:outline-none focus:ring-2 ${
-                  isDarkMode
+                  isDark
                     ? "focus:border-[#ffd200] focus:ring-[#ffd200]/30"
                     : "focus:border-sky-400 focus:ring-sky-200"
                 } ${selectBaseClass}`}
@@ -1086,13 +1079,21 @@ export default function NavigationMap(): JSX.Element {
               </select>
             </div>
           </div>
+          <Link href="/account/login">
+            <div
+              className={`flex flex-[1] h-full  w-full items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
+              transition transform hover:scale-[1.03] active:scale-95`}
+            >
+              <IconLogin2 size={35} />
+            </div>
+          </Link>
         </div>
       </div>
 
       {/* Nav mode pills */}
-      <div className="absolute inset-x-3 top-21 z-30 space-y-3 md:left-1/2 md:w-[720px] md:-translate-x-1/2">
+      <div className="absolute  inset-x-3 top-21 z-30 space-y-3 md:left-1/2 md:w-[720px] md:-translate-x-1/2">
         <div className="px-3">
-          <div className="flex items-center justify-content-center">
+          <div className="flex  justify-center">
             <span
               className={`mx-2 w-15 rounded-3xl border ${borderMutedClass} ${surfacePanelClass} text-center text-[13px] font-bold uppercase tracking-wide text-slate-200 dark:text-slate-800 shadow-xl backdrop-blur`}
             >
@@ -1100,7 +1101,7 @@ export default function NavigationMap(): JSX.Element {
             </span>
           </div>
 
-          <div className="mt-1 -mx-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <div className="mt-1 justify-center  -mx-1 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
             {navModes.map((mode) => {
               const active = `${mode.id}` === `${curNavMode}`;
               return (
@@ -1110,10 +1111,10 @@ export default function NavigationMap(): JSX.Element {
                   className={[
                     "shrink-0 rounded-[15px] px-4 py-1.5 text-xs font-semibold uppercase transition shadow-sm",
                     active
-                      ? isDarkMode
+                      ? isDark
                         ? "bg-[#ffd200] text-[#041631]"
                         : "bg-[#003c71] text-white"
-                      : isDarkMode
+                      : isDark
                       ? `border ${borderMutedClass} bg-white/5 text-slate-100 hover:bg-white/10`
                       : `border ${borderMutedClass} bg-slate-50 text-slate-700 hover:bg-slate-100`,
                   ].join(" ")}
@@ -1146,7 +1147,7 @@ export default function NavigationMap(): JSX.Element {
           <div
             className={[
               "mr-3 mb-2 justify-self-start rounded-[15px]  w-15 h-15 justify-items-center content-center pointer-events-auto",
-              isDarkMode ? "bg-[#ffd200]" : "bg-[#003c71]",
+              isDark ? "bg-[#ffd200]" : "bg-[#003c71]",
             ].join(" ")}
           >
             <button
@@ -1155,12 +1156,12 @@ export default function NavigationMap(): JSX.Element {
             >
               {isZoomed ? (
                 <IconArrowsMaximize
-                  color={isDarkMode ? "#041631" : "white"}
+                  color={isDark ? "#041631" : "white"}
                   size={32}
                 />
               ) : (
                 <IconArrowsMinimize
-                  color={isDarkMode ? "#041631" : "white"}
+                  color={isDark ? "#041631" : "white"}
                   size={32}
                 />
               )}
@@ -1170,7 +1171,7 @@ export default function NavigationMap(): JSX.Element {
           <div
             className={[
               "mr-3 mb-2 justify-self-end rounded-[15px]  w-15 h-15 justify-items-center content-center pointer-events-auto",
-              isDarkMode ? "bg-[#ffd200]" : "bg-[#003c71]",
+              isDark ? "bg-[#ffd200]" : "bg-[#003c71]",
             ].join(" ")}
           >
             <button
@@ -1179,7 +1180,7 @@ export default function NavigationMap(): JSX.Element {
             >
               {!tracking && !navigating ? (
                 <IconArrowGuide
-                  color={isDarkMode ? "#041631" : "white"}
+                  color={isDark ? "#041631" : "white"}
                   size={32}
                 />
               ) : null}
@@ -1187,12 +1188,12 @@ export default function NavigationMap(): JSX.Element {
               {navigating ? (
                 tracking ? (
                   <IconNavigationX
-                    color={isDarkMode ? "#041631" : "white"}
+                    color={isDark ? "#041631" : "white"}
                     size={32}
                   />
                 ) : (
                   <IconNavigation
-                    color={isDarkMode ? "#041631" : "white"}
+                    color={isDark ? "#041631" : "white"}
                     size={32}
                   />
                 )
@@ -1219,7 +1220,7 @@ export default function NavigationMap(): JSX.Element {
             <div
               className={[
                 "flex ml-0.5 mt-0.5 w-14 h-14 rounded-3xl shadow-md justify-content-center content-center select-none touch-none",
-                isDarkMode ? "bg-[#ffd200]" : "bg-[#003c71]",
+                isDark ? "bg-[#ffd200]" : "bg-[#003c71]",
               ].join(" ")}
               style={{ touchAction: "none" }}
               onPointerDown={handleSheetDragStart}
@@ -1234,12 +1235,12 @@ export default function NavigationMap(): JSX.Element {
               >
                 {sheetPosition > 0.5 ? (
                   <IconArrowBadgeUpFilled
-                    color={isDarkMode ? "#041631" : "white"}
+                    color={isDark ? "#041631" : "white"}
                     size={42}
                   />
                 ) : (
                   <IconArrowBadgeDownFilled
-                    color={isDarkMode ? "#041631" : "white"}
+                    color={isDark ? "#041631" : "white"}
                     size={42}
                   />
                 )}
@@ -1319,11 +1320,11 @@ export default function NavigationMap(): JSX.Element {
                   "circle-color": [
                     "case",
                     ["boolean", ["get", "onPath"], false],
-                    isDarkMode ? "#ffd200" : "#003c71",
-                    isDarkMode ? "#60a5fa" : "#2563eb",
+                    isDark ? "#ffd200" : "#003c71",
+                    isDark ? "#60a5fa" : "#2563eb",
                   ],
                   "circle-stroke-width": 2,
-                  "circle-stroke-color": isDarkMode ? "#041631" : "#ffffff",
+                  "circle-stroke-color": isDark ? "#041631" : "#ffffff",
                 }}
               />
             </Source>
@@ -1355,7 +1356,7 @@ export default function NavigationMap(): JSX.Element {
                 id="boundary-fill"
                 type="fill"
                 paint={{
-                  "fill-color": isDarkMode ? "#ffd200" : "#003c71",
+                  "fill-color": isDark ? "#ffd200" : "#003c71",
                   "fill-opacity": 0.2,
                 }}
               />
@@ -1363,7 +1364,7 @@ export default function NavigationMap(): JSX.Element {
                 id="boundary-outline"
                 type="line"
                 paint={{
-                  "line-color": isDarkMode ? "#ffd200" : "#003c71",
+                  "line-color": isDark ? "#ffd200" : "#003c71",
                   "line-width": 2,
                 }}
               />

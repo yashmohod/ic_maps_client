@@ -23,17 +23,17 @@ import {
 const items = [
   {
     title: "Route Editor",
-    url: "#",
+    url: "/route-editor",
     icon: PencilRuler,
   },
   {
     title: "Building Editor",
-    url: "#",
+    url: "building-editor",
     icon: Building,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "setting",
     icon: Settings,
   },
 ];

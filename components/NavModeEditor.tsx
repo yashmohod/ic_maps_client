@@ -33,6 +33,7 @@ export default function NavModes({ navModes, getNavModes }: Props) {
 
   const [curEditId, setCurEditId] = useState<string | number | null>(null);
   const [curEditName, setCurEditName] = useState<string>("");
+  const [curEditFromThrough, setCurEditFromThrough] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
 
   const normalizedNames = useMemo(() => {
@@ -64,7 +65,11 @@ export default function NavModes({ navModes, getNavModes }: Props) {
       return toast.error("Can't have duplicate names!");
     }
 
-    const resp: any = await editNavMode(curEditId.toString(), trimmed);
+    const resp: any = await editNavMode(
+      curEditId.toString(),
+      trimmed,
+      curEditFromThrough
+    );
     if (resp?.status === 200) {
       toast.success("NavMode name updated!");
       setCurEditId(null);
@@ -108,20 +113,7 @@ export default function NavModes({ navModes, getNavModes }: Props) {
             value={currentName}
             onChange={(e) => setCurrentName(e.target.value)}
           />
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="airplane-mode"
-              value={curFromThrough ? "on" : "off"}
-              onClick={() => {
-                setCurFromThrough((cur) => {
-                  return !cur;
-                });
-              }}
-            />
-            <Label htmlFor="airplane-mode" className="w-30">
-              Through building routing
-            </Label>
-          </div>
+
           <Button
             type="button"
             className="shrink-0"
@@ -149,20 +141,6 @@ export default function NavModes({ navModes, getNavModes }: Props) {
                   <span className="text-sm font-medium">{m.name}</span>
 
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="airplane-mode"
-                        value={m.fromThrough ? "on" : "off"}
-                        onClick={() => {
-                          setCurFromThrough((cur) => {
-                            return !cur;
-                          });
-                        }}
-                      />
-                      <Label htmlFor="airplane-mode" className="w-30">
-                        Through building routing
-                      </Label>
-                    </div>
                     <Button
                       type="button"
                       variant="default"
@@ -170,6 +148,7 @@ export default function NavModes({ navModes, getNavModes }: Props) {
                       onClick={() => {
                         setCurEditId(m.id);
                         setCurEditName(m.name);
+                        setCurEditFromThrough(m.fromThrough);
                         setOpen(true);
                       }}
                     >
@@ -198,19 +177,21 @@ export default function NavModes({ navModes, getNavModes }: Props) {
           <DialogHeader>
             <DialogTitle>Edit Name</DialogTitle>
           </DialogHeader>
-
           <div className="flex gap-2">
             <Input
               placeholder="NavMode Name"
               value={curEditName}
               onChange={(e) => setCurEditName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") void editNavModeHandler();
-              }}
             />
             <div className="flex items-center space-x-2">
-              <Switch id="airplane-mode" />
-              <Label htmlFor="airplane-mode">Airplane Mode</Label>
+              <Switch
+                id="airplane-mode"
+                checked={curEditFromThrough}
+                onCheckedChange={(checked) => setCurEditFromThrough(checked)}
+              />
+              <Label htmlFor="airplane-mode" className="w-30">
+                Through building routing
+              </Label>
             </div>
             <Button type="button" onClick={editNavModeHandler}>
               Submit
