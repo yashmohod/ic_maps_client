@@ -1032,7 +1032,7 @@ export default function NavigationMap(): JSX.Element {
         isDark ? "bg-[#041631] text-white" : "bg-slate-50 text-slate-900"
       }`}
     >
-      <Toaster position="top-right" reverseOrder />
+      
       {/* <AppSidebar /> */}
 
       {/* Top brand + search bar */}

@@ -1,3 +1,4 @@
+"use Client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signInAction } from "@/app/actions/auth";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -41,6 +44,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const { isDark } = useAppTheme();
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,8 +55,17 @@ export function LoginForm({
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    signInAction(values.email, values.password);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { success, message } = await signInAction(
+      values.email,
+      values.password
+    );
+    if (success) {
+      toast.success(message as string);
+      router.push("/");
+    } else {
+      toast.error(message as string);
+    }
   }
 
   return (
