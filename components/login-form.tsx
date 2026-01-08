@@ -131,7 +131,7 @@ export function LoginForm({
                         <FormLabel>Password</FormLabel>
 
                         <FormControl>
-                          <Input placeholder="**********" {...field} />
+                          <Input placeholder="**********" type="password" {...field} />
                         </FormControl>
                         <FormMessage />
                         <a
@@ -147,7 +147,7 @@ export function LoginForm({
                 <Field>
                   <Button type="submit">Login</Button>
                   <FieldDescription className="text-center">
-                    Don&apos;t have an account? <a href="#">Sign up</a>
+                    Don&apos;t have an account? <a href="/account/signup">Sign up</a>
                   </FieldDescription>
                 </Field>
               </FieldGroup>

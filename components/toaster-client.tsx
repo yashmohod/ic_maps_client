@@ -1,7 +1,9 @@
 // components/toaster-client.tsx
+
 "use client";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 export function ToasterClient() {
-  return <Toaster position="top-right" />;
+  return <Toaster />;
 }
+

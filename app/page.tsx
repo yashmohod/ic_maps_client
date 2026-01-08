@@ -1041,7 +1041,7 @@ export default function NavigationMap(): JSX.Element {
           <div
             className={`flex flex-[1] items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
               transition transform hover:scale-[1.03] active:scale-95`}
-            onClick={toggleDarkMode}
+            onClick={toggleSidebar}
           >
             <Image
               src={

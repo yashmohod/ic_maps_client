@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/sidebar";
 
 // Menu items.
+export function AppSidebar() {
+
 const items = [
   {
     title: "Route Editor",
@@ -38,7 +40,8 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+
+
   return (
     <Sidebar variant="sidebar">
       <SidebarHeader>

@@ -1,8 +1,7 @@
 "use client";
-import { useAppTheme } from "@/hooks/use-app-theme";
 import { LoginForm } from "@/components/login-form";
+import { useAppTheme } from "@/hooks/use-app-theme";
 import Image from "next/image";
-import toast, { Toaster } from "react-hot-toast";
 export default function LoginPage() {
   const { isDark } = useAppTheme();
   return (
