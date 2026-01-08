@@ -1,4 +1,3 @@
-// src/components/EditPanel.tsx
 "use client";
 
 import React, { JSX } from "react";
@@ -26,7 +25,17 @@ function EditPanel({
   submitName,
 }: Props): JSX.Element {
   return (
-    <div className="flex flex-col absolute z-20 top-3 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow items-start gap-2">
+    <div
+      className="
+        flex flex-col absolute
+        z-10
+        top-3 left-3
+        bg-panel text-panel-foreground
+        border border-border backdrop-blur
+        px-3 py-2 rounded-xl shadow
+        items-start gap-2
+      "
+    >
       <span className="text-sm font-medium">Current Building:</span>
 
       <p className="text-sm leading-5">

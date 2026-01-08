@@ -24,6 +24,7 @@ import "./page.css";
 
 import EditPanel from "@/components/BuildingInfoEditPanel";
 import DrawControl from "@/components/BuildingDrawControls";
+import { useAppTheme } from "@/hooks/use-app-theme";
 
 import {
   getAllBuildings,
@@ -58,6 +59,7 @@ type MapSectionProps = {
   mlMap: MlMap | null;
   mapRef: React.RefObject<MapRef | null>;
   stableViewState: ViewStateLite;
+  mapStyleUrl: string;
   onMapClick: (e: MapMouseEvent) => void;
   onLoad: () => void;
   onCreate: (e: DrawEvent, draw?: unknown) => void;
@@ -74,6 +76,7 @@ const MapSection = React.memo(function MapSection({
   mlMap,
   mapRef,
   stableViewState,
+  mapStyleUrl,
   onMapClick,
   onLoad,
   onCreate,
@@ -89,7 +92,7 @@ const MapSection = React.memo(function MapSection({
       onClick={onMapClick as any}
       onLoad={onLoad}
       // Some versions don't accept className; wrapper handles sizing anyway
-      mapStyle="https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR"
+      mapStyle={mapStyleUrl}
       style={{ width: "100%", height: "100%" }}
     >
       <DrawControl
@@ -113,6 +116,7 @@ const MapSection = React.memo(function MapSection({
 export default function BuildingEditor(): JSX.Element {
   const mapRef = useRef<MapRef | null>(null);
   const buildingsRef = useRef<BuildingRow[]>([]);
+  const { isDark } = useAppTheme();
 
   const [mlMap, setMlMap] = useState<MlMap | null>(null);
   const [buildings, setBuildings] = useState<BuildingRow[]>([]);
@@ -124,6 +128,10 @@ export default function BuildingEditor(): JSX.Element {
     {},
   );
   const [curEditName, setcurEditName] = useState<string>("");
+
+  const mapStyleUrl = isDark
+    ? "https://api.maptiler.com/maps/dataviz-dark/style.json?key=ezFqZj4n29WctcwDznlR"
+    : "https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR";
 
   /** Stable initial map view */
   const stableViewState = useMemo<ViewStateLite>(
@@ -253,6 +261,7 @@ export default function BuildingEditor(): JSX.Element {
       id,
     };
     const polyGon = JSON.stringify(updated);
+    console.log(polyGon)
 
     const resp: any = await updateBuildingPolyGon(id, polyGon, lat, lng);
     if (resp) {
@@ -328,7 +337,7 @@ export default function BuildingEditor(): JSX.Element {
 
   /** Render */
   return (
-    <div className="w-full h-screen relative">
+    <div className="relative h-screen w-full bg-background text-foreground">
       <Toaster position="top-right" reverseOrder />
 
       <EditPanel
@@ -344,6 +353,7 @@ export default function BuildingEditor(): JSX.Element {
           mlMap={mlMap}
           mapRef={mapRef}
           stableViewState={stableViewState}
+          mapStyleUrl={mapStyleUrl}
           onMapClick={onMapClick}
           onLoad={onLoad}
           onCreate={onCreate}

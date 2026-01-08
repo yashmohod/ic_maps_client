@@ -181,19 +181,12 @@ export default function NavigationMap(): JSX.Element {
     ? "https://api.maptiler.com/maps/dataviz-dark/style.json?key=ezFqZj4n29WctcwDznlR"
     : "https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR";
 
-  const surfacePanelClass = isDark
-    ? "border-white/10 bg-[#0b1f3a]/90 text-white"
-    : "border-white/70 bg-white/95 text-slate-900";
-
-  const surfaceSubtleClass = isDark
-    ? "bg-[#132c4f]/80 text-slate-100"
-    : "bg-slate-50/70 text-slate-600";
-
-  const borderMutedClass = isDark ? "border-white/15" : "border-slate-200";
-
-  const selectBaseClass = isDark
-    ? "border-white/15 bg-[#091830] text-white"
-    : "border-slate-200 bg-white text-slate-800";
+  const surfacePanelClass = "bg-panel text-panel-foreground";
+  const surfaceSubtleClass = "bg-panel-muted text-panel-muted-foreground";
+  const borderMutedClass = "border-border";
+  const selectBaseClass = "border-border bg-panel text-panel-foreground";
+  const selectFocusClass =
+    "focus:border-brand-accent focus:ring-brand-accent/30";
 
   /** -------- Accuracy ring -------- */
 
@@ -1027,32 +1020,28 @@ export default function NavigationMap(): JSX.Element {
   /** ---------------- Render ---------------- */
 
   return (
-    <div
-      className={`relative h-screen w-full ${
-        isDark ? "bg-[#041631] text-white" : "bg-slate-50 text-slate-900"
-      }`}
-    >
-      
-      {/* <AppSidebar /> */}
-
+    <div className="relative h-screen w-full bg-background text-foreground">
       {/* Top brand + search bar */}
       <div className="absolute inset-x-2 top-3 z-30 md:left-1/2 md:w-[720px] md:-translate-x-1/2">
         <div className="flex w-full items-stretch gap-2">
           <div
             className={`flex flex-[1] items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
               transition transform hover:scale-[1.03] active:scale-95`}
-            onClick={toggleSidebar}
+            onClick={toggleTheme}
           >
             <Image
-              src={
-                isDark
-                  ? "/assets/ic_logo_up_dark.png"
-                  : "/assets/ic_logo_up.png"
-              }
+              src="/assets/ic_logo_up.png"
               alt="Ithaca College logo"
               width={160}
               height={40}
-              className="max-h-10 w-auto"
+              className="max-h-10 w-auto dark:hidden"
+            />
+            <Image
+              src="/assets/ic_logo_up_dark.png"
+              alt="Ithaca College logo"
+              width={160}
+              height={40}
+              className="hidden max-h-10 w-auto dark:block"
             />
           </div>
 
@@ -1062,11 +1051,7 @@ export default function NavigationMap(): JSX.Element {
             <div className="w-full">
               <select
                 id="search-dest"
-                className={`w-full rounded-2xl border px-3 py-3 text-sm font-medium transition focus:outline-none focus:ring-2 ${
-                  isDark
-                    ? "focus:border-[#ffd200] focus:ring-[#ffd200]/30"
-                    : "focus:border-sky-400 focus:ring-sky-200"
-                } ${selectBaseClass}`}
+                className={`w-full rounded-2xl border px-3 py-3 text-sm font-medium transition focus:outline-none focus:ring-2 ${selectFocusClass} ${selectBaseClass}`}
                 value={selectedDest}
                 onChange={(e) => handleDestinationChange(e.target.value)}
               >
@@ -1095,7 +1080,7 @@ export default function NavigationMap(): JSX.Element {
         <div className="px-3">
           <div className="flex  justify-center">
             <span
-              className={`mx-2 w-15 rounded-3xl border ${borderMutedClass} ${surfacePanelClass} text-center text-[13px] font-bold uppercase tracking-wide text-slate-200 dark:text-slate-800 shadow-xl backdrop-blur`}
+              className={`mx-2 w-15 rounded-3xl border ${borderMutedClass} ${surfacePanelClass} text-center text-[13px] font-bold uppercase tracking-wide text-panel-muted-foreground shadow-xl backdrop-blur`}
             >
               Modes
             </span>
@@ -1111,12 +1096,8 @@ export default function NavigationMap(): JSX.Element {
                   className={[
                     "shrink-0 rounded-[15px] px-4 py-1.5 text-xs font-semibold uppercase transition shadow-sm",
                     active
-                      ? isDark
-                        ? "bg-[#ffd200] text-[#041631]"
-                        : "bg-[#003c71] text-white"
-                      : isDark
-                      ? `border ${borderMutedClass} bg-white/5 text-slate-100 hover:bg-white/10`
-                      : `border ${borderMutedClass} bg-slate-50 text-slate-700 hover:bg-slate-100`,
+                      ? "bg-brand text-brand-foreground dark:bg-brand-accent dark:text-brand-accent-foreground"
+                      : `border ${borderMutedClass} bg-panel-muted text-panel-muted-foreground hover:bg-panel`,
                   ].join(" ")}
                 >
                   {mode.name}
@@ -1124,12 +1105,36 @@ export default function NavigationMap(): JSX.Element {
               );
             })}
             {navModes.length === 0 && (
-              <span className="px-2 text-[10px] text-slate-400">
+              <span className="px-2 text-[10px] text-muted-foreground">
                 Loading navigation modes…
               </span>
             )}
           </div>
         </div>
+      </div>
+
+      <div className="absolute flex flex-col inset-x-3 top-40 z-30 space-y-3 md:left-1/2 md:-translate-x-1/2">
+        <Link href="/route-editor">
+          <button
+            className={[
+              "shrink-0 w-30 rounded-[15px] px-4 py-1.5 font-bold transition shadow-sm",
+              `border ${borderMutedClass} bg-panel-muted text-panel-muted-foreground hover:bg-panel`,
+            ].join(" ")}
+          >
+            {"Route \n Editor"}
+          </button>
+        </Link>
+
+        <Link href="/building-editor">
+          <button
+            className={[
+              "shrink-0 w-30 rounded-[15px] px-4 py-1.5 font-bold transition shadow-sm",
+              `border ${borderMutedClass} bg-panel-muted text-panel-muted-foreground hover:bg-panel`,
+            ].join(" ")}
+          >
+            {"Building \n Editor"}
+          </button>
+        </Link>
       </div>
 
       {/* Bottom sheet wrapper */}
@@ -1147,7 +1152,7 @@ export default function NavigationMap(): JSX.Element {
           <div
             className={[
               "mr-3 mb-2 justify-self-start rounded-[15px]  w-15 h-15 justify-items-center content-center pointer-events-auto",
-              isDark ? "bg-[#ffd200]" : "bg-[#003c71]",
+              "bg-brand text-brand-foreground dark:bg-brand-accent dark:text-brand-accent-foreground",
             ].join(" ")}
           >
             <button
@@ -1155,15 +1160,9 @@ export default function NavigationMap(): JSX.Element {
               onClick={handelZoom}
             >
               {isZoomed ? (
-                <IconArrowsMaximize
-                  color={isDark ? "#041631" : "white"}
-                  size={32}
-                />
+                <IconArrowsMaximize className="text-current" size={32} />
               ) : (
-                <IconArrowsMinimize
-                  color={isDark ? "#041631" : "white"}
-                  size={32}
-                />
+                <IconArrowsMinimize className="text-current" size={32} />
               )}
             </button>
           </div>
@@ -1171,7 +1170,7 @@ export default function NavigationMap(): JSX.Element {
           <div
             className={[
               "mr-3 mb-2 justify-self-end rounded-[15px]  w-15 h-15 justify-items-center content-center pointer-events-auto",
-              isDark ? "bg-[#ffd200]" : "bg-[#003c71]",
+              "bg-brand text-brand-foreground dark:bg-brand-accent dark:text-brand-accent-foreground",
             ].join(" ")}
           >
             <button
@@ -1179,23 +1178,14 @@ export default function NavigationMap(): JSX.Element {
               onClick={handelTheButton}
             >
               {!tracking && !navigating ? (
-                <IconArrowGuide
-                  color={isDark ? "#041631" : "white"}
-                  size={32}
-                />
+                <IconArrowGuide className="text-current" size={32} />
               ) : null}
 
               {navigating ? (
                 tracking ? (
-                  <IconNavigationX
-                    color={isDark ? "#041631" : "white"}
-                    size={32}
-                  />
+                  <IconNavigationX className="text-current" size={32} />
                 ) : (
-                  <IconNavigation
-                    color={isDark ? "#041631" : "white"}
-                    size={32}
-                  />
+                  <IconNavigation className="text-current" size={32} />
                 )
               ) : null}
             </button>
@@ -1220,7 +1210,7 @@ export default function NavigationMap(): JSX.Element {
             <div
               className={[
                 "flex ml-0.5 mt-0.5 w-14 h-14 rounded-3xl shadow-md justify-content-center content-center select-none touch-none",
-                isDark ? "bg-[#ffd200]" : "bg-[#003c71]",
+                "bg-brand text-brand-foreground dark:bg-brand-accent dark:text-brand-accent-foreground",
               ].join(" ")}
               style={{ touchAction: "none" }}
               onPointerDown={handleSheetDragStart}
@@ -1234,13 +1224,10 @@ export default function NavigationMap(): JSX.Element {
                 }}
               >
                 {sheetPosition > 0.5 ? (
-                  <IconArrowBadgeUpFilled
-                    color={isDark ? "#041631" : "white"}
-                    size={42}
-                  />
+                  <IconArrowBadgeUpFilled className="text-current" size={42} />
                 ) : (
                   <IconArrowBadgeDownFilled
-                    color={isDark ? "#041631" : "white"}
+                    className="text-current"
                     size={42}
                   />
                 )}
@@ -1267,7 +1254,7 @@ export default function NavigationMap(): JSX.Element {
                   </div>
                   <button
                     onClick={handleClearDestination}
-                    className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[color:inherit]/80 transition hover:bg-white/5"
+                    className="rounded-full border border-border/40 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-panel-foreground/80 transition hover:bg-foreground/5"
                   >
                     Clear
                   </button>

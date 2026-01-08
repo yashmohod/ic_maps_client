@@ -26,7 +26,6 @@ import { Input } from "@/components/ui/input"
 import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useAppTheme } from "@/hooks/use-app-theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -55,7 +54,6 @@ export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { isDark } = useAppTheme();
   const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({

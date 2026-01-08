@@ -18,7 +18,7 @@ export async function PATCH(req: Request) {
   const body = await req.json();
 
   const res = await fetch(`${BACKEND}/building/setpolygon`, {
-    method: "DELETE",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });

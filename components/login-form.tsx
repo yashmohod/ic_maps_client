@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/form";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { useAppTheme } from "@/hooks/use-app-theme";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -43,7 +42,6 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { isDark } = useAppTheme();
   const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,19 +76,22 @@ export function LoginForm({
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FieldGroup>
+                <FieldGroup>
                 <Field>
                   <Button variant="outline" type="button">
                     <Image
-                      src={
-                        isDark
-                          ? "/assets/ic_logo_up_dark.png"
-                          : "/assets/ic_logo_up.png"
-                      }
+                      src="/assets/ic_logo_up.png"
                       alt="Ithaca College logo"
                       width={10}
                       height={10}
-                      className="max-h-6 w-auto"
+                      className="max-h-6 w-auto dark:hidden"
+                    />
+                    <Image
+                      src="/assets/ic_logo_up_dark.png"
+                      alt="Ithaca College logo"
+                      width={10}
+                      height={10}
+                      className="hidden max-h-6 w-auto dark:block"
                     />
                     IC Net Pass
                   </Button>

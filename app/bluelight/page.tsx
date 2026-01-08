@@ -14,6 +14,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import type { LineLayerSpecification } from "maplibre-gl";
 
+import { useAppTheme } from "@/hooks/use-app-theme";
 import { getNearestBlueLightPath } from "@/lib/icmapsApi";
 import NavModeMap from "../../components/NavMode";
 
@@ -81,10 +82,13 @@ export default function NavigationMapBlueLight(): JSX.Element {
   const deviceHeadingRef = useRef<number | null>(null);
   const routeCoordsRef = useRef<Array<[number, number]>>([]);
 
-  // Light mode only
-  const isDarkMode = false;
-  const surfacePanelClass = "border-white/70 bg-white/95 text-slate-900";
-  const borderMutedClass = "border-slate-200";
+  const { isDark } = useAppTheme();
+  const mapStyleUrl = isDark
+    ? "https://api.maptiler.com/maps/dataviz-dark/style.json?key=ezFqZj4n29WctcwDznlR"
+    : "https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR";
+
+  const surfacePanelClass = "bg-panel text-panel-foreground";
+  const borderMutedClass = "border-border";
 
   /** -------- Accuracy ring -------- */
 
@@ -522,7 +526,7 @@ export default function NavigationMapBlueLight(): JSX.Element {
   /** ---------------- Render ---------------- */
 
   return (
-    <div className="relative h-screen w-full bg-slate-50 text-slate-900">
+    <div className="relative h-screen w-full bg-background text-foreground">
       <Toaster position="top-right" reverseOrder />
 
       {/* Top brand bar */}
@@ -533,13 +537,14 @@ export default function NavigationMapBlueLight(): JSX.Element {
               transition transform hover:scale-[1.03] active:scale-95`}
           >
             <img
-              src={
-                isDarkMode
-                  ? "/assets/ic_logo_up_dark.png"
-                  : "/assets/ic_logo_up.png"
-              }
+              src="/assets/ic_logo_up.png"
               alt="Ithaca College logo"
-              className="max-h-10"
+              className="max-h-10 dark:hidden"
+            />
+            <img
+              src="/assets/ic_logo_up_dark.png"
+              alt="Ithaca College logo"
+              className="hidden max-h-10 dark:block"
             />
           </div>
 
@@ -551,7 +556,7 @@ export default function NavigationMapBlueLight(): JSX.Element {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-rose-600">
                   Emergency
                 </p>
-                <p className="text-sm font-semibold text-slate-800">
+                <p className="text-sm font-semibold text-panel-foreground">
                   Blue Light Safety Route
                 </p>
               </div>
@@ -567,7 +572,7 @@ export default function NavigationMapBlueLight(): JSX.Element {
       <div className="absolute z-30 right-3 bottom-[calc(env(safe-area-inset-bottom,0)+24px)] md:bottom-6 flex flex-col gap-2">
         {!tracking ? (
           <button
-            className="rounded-full bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-rose-700 transition"
+            className="rounded-full bg-destructive px-5 py-3 text-sm font-semibold text-white shadow-xl transition hover:bg-destructive/90"
             onClick={startTracking}
             title="Start emergency route to nearest blue light"
           >
@@ -575,7 +580,7 @@ export default function NavigationMapBlueLight(): JSX.Element {
           </button>
         ) : (
           <button
-            className="rounded-full bg-slate-800 px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-slate-900 transition"
+            className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-xl transition hover:bg-primary/90"
             onClick={stopTracking}
             title="Stop emergency route"
           >
@@ -592,7 +597,7 @@ export default function NavigationMapBlueLight(): JSX.Element {
           onMove={(e: any) =>
             setViewState((prev) => ({ ...prev, ...e.viewState }))
           }
-          mapStyle="https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR"
+          mapStyle={mapStyleUrl}
           onLoad={() => setMapReady(true)}
         >
           <NavModeMap
@@ -632,8 +637,7 @@ export default function NavigationMapBlueLight(): JSX.Element {
                 <div className="relative flex items-center justify-center">
                   <div className="absolute h-8 w-8 rounded-full bg-red-600 opacity-40 animate-ping" />
                   <div
-                    className="h-4 w-4 rounded-full border-2 border-red-700 shadow-lg"
-                    style={{ backgroundColor: "#003c71" }}
+                    className="h-4 w-4 rounded-full border-2 border-red-700 bg-brand shadow-lg"
                   />
                 </div>
               </Marker>

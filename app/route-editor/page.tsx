@@ -37,6 +37,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useAppTheme } from "@/hooks/use-app-theme";
 
 import {
   getAllMapFeature,
@@ -99,6 +100,12 @@ export default function RouteEditor(): JSX.Element {
     latitude: 42.422108,
     zoom: 15.5,
   });
+  const { isDark } = useAppTheme();
+  const mapStyleUrl = isDark
+    ? "https://api.maptiler.com/maps/dataviz-dark/style.json?key=ezFqZj4n29WctcwDznlR"
+    : "https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR";
+  const panelClass =
+    "border border-border bg-panel text-panel-foreground shadow backdrop-blur";
 
   // Graph
   const [markers, setMarkers] = useState<MarkerNode[]>([]);
@@ -795,16 +802,20 @@ export default function RouteEditor(): JSX.Element {
   /** ---------------- Render ---------------- */
 
   return (
-    <div className="w-full h-screen relative">
+    <div className="relative h-screen w-full bg-background text-foreground">
       <Toaster position="top-right" reverseOrder />
 
       {/* Top Toolbar */}
-      <div className="absolute z-20 top-3 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow flex flex-wrap items-center gap-2">
+      <div
+        className={`absolute z-20 top-3 left-3 rounded-xl px-3 py-2 flex flex-wrap items-center gap-2 ${panelClass}`}
+      >
         <span className="text-sm font-medium">Mode:</span>
 
         <button
           className={`px-2 py-1 rounded ${
-            mode === "select" ? "bg-blue-600 text-white" : "bg-gray-200"
+            mode === "select"
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-secondary-foreground"
           }`}
           onClick={() => setMode("select")}
         >
@@ -813,7 +824,9 @@ export default function RouteEditor(): JSX.Element {
 
         <button
           className={`px-2 py-1 rounded ${
-            mode === "edit" ? "bg-blue-600 text-white" : "bg-gray-200"
+            mode === "edit"
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-secondary-foreground"
           }`}
           onClick={() => setMode("edit")}
         >
@@ -822,7 +835,9 @@ export default function RouteEditor(): JSX.Element {
 
         <button
           className={`px-2 py-1 rounded ${
-            mode === "delete" ? "bg-red-600 text-white" : "bg-gray-200"
+            mode === "delete"
+              ? "bg-destructive text-white"
+              : "bg-secondary text-secondary-foreground"
           }`}
           onClick={() => setMode("delete")}
         >
@@ -831,7 +846,9 @@ export default function RouteEditor(): JSX.Element {
 
         <button
           className={`px-2 py-1 rounded ${
-            mode === "navMode" ? "bg-blue-600 text-white" : "bg-gray-200"
+            mode === "navMode"
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-secondary-foreground"
           }`}
           onClick={() => setMode("navMode")}
         >
@@ -840,7 +857,9 @@ export default function RouteEditor(): JSX.Element {
 
         <button
           className={`px-2 py-1 rounded ${
-            mode === "buildingGroup" ? "bg-blue-600 text-white" : "bg-gray-200"
+            mode === "buildingGroup"
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-secondary-foreground"
           }`}
           onClick={() => setMode("buildingGroup")}
         >
@@ -849,23 +868,25 @@ export default function RouteEditor(): JSX.Element {
 
         <button
           className={`px-2 py-1 rounded ${
-            mode === "blueLight" ? "bg-blue-600 text-white" : "bg-gray-200"
+            mode === "blueLight"
+              ? "bg-primary text-primary-foreground"
+              : "bg-secondary text-secondary-foreground"
           }`}
           onClick={() => setMode("blueLight")}
         >
           Blue Light
         </button>
 
-        <div className="mx-2 w-px h-5 bg-gray-300" />
+        <div className="mx-2 w-px h-5 bg-border" />
 
         <button
-          className="px-2 py-1 rounded bg-gray-800 text-white"
+          className="px-2 py-1 rounded bg-primary text-primary-foreground"
           onClick={exportGeoJSON}
         >
           Export
         </button>
 
-        <label className="px-2 py-1 rounded bg-gray-200 cursor-pointer">
+        <label className="px-2 py-1 rounded bg-secondary text-secondary-foreground cursor-pointer">
           Import
           <input
             type="file"
@@ -875,22 +896,29 @@ export default function RouteEditor(): JSX.Element {
           />
         </label>
 
-        <div className="mx-2 w-px h-5 bg-gray-300" />
+        <div className="mx-2 w-px h-5 bg-border" />
 
-        <button className="px-2 py-1 rounded bg-gray-200" onClick={toggleNodes}>
+        <button
+          className="px-2 py-1 rounded bg-secondary text-secondary-foreground"
+          onClick={toggleNodes}
+        >
           {showNodes ? "Hide Nodes" : "Show Nodes"}
         </button>
       </div>
 
       {mode === "select" && (
-        <div className="absolute z-20 top-16 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow flex items-center gap-3">
+        <div
+          className={`absolute z-20 top-16 left-3 rounded-xl px-3 py-2 flex items-center gap-3 ${panelClass}`}
+        >
           <span className="text-sm font-medium">Bi Directional Mode</span>
           <button
             onClick={() => {
               setBiDirectionalEdges(!biDirectionalEdges);
             }}
             className={`px-2 py-1 rounded ${
-              !biDirectionalEdges ? "bg-red-600 text-white" : "bg-gray-200"
+              !biDirectionalEdges
+                ? "bg-destructive text-white"
+                : "bg-secondary text-secondary-foreground"
             }`}
           >
             {biDirectionalEdges ? "On" : "Off"}
@@ -898,7 +926,7 @@ export default function RouteEditor(): JSX.Element {
 
           {!biDirectionalEdges ? (
             <>
-              <div className="mx-2 w-px h-5 bg-gray-300" />
+              <div className="mx-2 w-px h-5 bg-border" />
               <span className="text-sm font-medium">
                 Note: The order of marker selection decides the direction of the
                 edge!
@@ -910,7 +938,9 @@ export default function RouteEditor(): JSX.Element {
 
       {/* Nav mode selector (left, under toolbar) */}
       {mode === "navMode" && (
-        <div className="absolute z-20 top-16 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow flex flex-wrap items-center gap-3">
+        <div
+          className={`absolute z-20 top-16 left-3 rounded-xl px-3 py-2 flex flex-wrap items-center gap-3 ${panelClass}`}
+        >
           <ComboboxSelect
             label="Navigation Mode"
             placeholder="Select Nav Mode..."
@@ -925,7 +955,9 @@ export default function RouteEditor(): JSX.Element {
 
           <button
             className={`px-2 py-1 rounded ${
-              showOnlyNavMode ? "bg-blue-600 text-white" : "bg-gray-200"
+              showOnlyNavMode
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground"
             }`}
             onClick={() => setShowOnlyNavMode((v) => !v)}
             title={
@@ -947,7 +979,9 @@ export default function RouteEditor(): JSX.Element {
 
       {/* Building selector (left, under toolbar) */}
       {mode === "buildingGroup" && (
-        <div className="absolute z-20 top-16 left-3 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow flex flex-wrap items-center gap-3">
+        <div
+          className={`absolute z-20 top-16 left-3 rounded-xl px-3 py-2 flex flex-wrap items-center gap-3 ${panelClass}`}
+        >
           <ComboboxSelect
             label="Current Building"
             placeholder="Select building..."
@@ -958,7 +992,7 @@ export default function RouteEditor(): JSX.Element {
           />
 
           <button
-            className="text-xs px-2 py-1 rounded bg-gray-200 disabled:opacity-50"
+            className="text-xs px-2 py-1 rounded bg-secondary text-secondary-foreground disabled:opacity-50"
             disabled={!currentBuilding || curBuildingNodes.size === 0}
             onClick={clearAllBuildingNodes}
             title="Detach all nodes from current building"
@@ -982,7 +1016,7 @@ export default function RouteEditor(): JSX.Element {
             })
           }
           onClick={handleMapClick as any}
-          mapStyle="https://api.maptiler.com/maps/base-v4/style.json?key=ezFqZj4n29WctcwDznlR"
+          mapStyle={mapStyleUrl}
           onLoad={handleLoad}
           style={{ width: "100%", height: "100%" }}
         >
@@ -1006,8 +1040,8 @@ export default function RouteEditor(): JSX.Element {
             const colorClass = isBuildingSel
               ? "bg-amber-500"
               : isNavModeSel || isDrawSel || isBlueLightSel
-              ? "bg-red-600"
-              : "bg-blue-600";
+              ? "bg-destructive"
+              : "bg-brand";
 
             return (
               <Marker
