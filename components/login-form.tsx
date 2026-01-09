@@ -32,7 +32,8 @@ import { z } from "zod";
 import { signInAction } from "@/app/actions/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
+import { Spinner } from "@/components/ui/spinner"
+import React, { useState} from "react";
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -42,6 +43,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+
+  const [loading,setLoading]= useState(false);
   const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +57,7 @@ export function LoginForm({
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
     const { success, message } = await signInAction(
       values.email,
       values.password
@@ -64,6 +68,7 @@ export function LoginForm({
     } else {
       toast.error(message as string);
     }
+    setLoading(false);
   }
 
   return (
@@ -146,7 +151,7 @@ export function LoginForm({
                   />
                 </Field>
                 <Field>
-                  <Button type="submit">Login</Button>
+                  <Button type="submit" disabled={loading}>{loading?<Spinner />:null}Login</Button>
                   <FieldDescription className="text-center">
                     Don&apos;t have an account? <a href="/account/signup">Sign up</a>
                   </FieldDescription>

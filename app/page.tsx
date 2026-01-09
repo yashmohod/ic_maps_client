@@ -1,5 +1,8 @@
+// T
 // src/app/NavigationMap.tsx
 "use client";
+import db from "../db/index.ts"
+import {user} from "../db/schema.ts"
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import Image from "next/image";
 import React, { useRef, useState, useMemo, useEffect, type JSX } from "react";
@@ -31,12 +34,12 @@ import {
   IconArrowsMinimize,
   IconLogin2,
 } from "@tabler/icons-react";
-
+import ProfileOptions from "../components/profileOptions.tsx"
 import NavModeMap from "../components/NavMode";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import { authClient,type Session } from "@/lib/auth-client"
 /** ---------------- Types ---------------- */
 
 type LngLat = { lng: number; lat: number };
@@ -155,7 +158,6 @@ export default function NavigationMap(): JSX.Element {
 
   const [lastGeoMsg, setLastGeoMsg] = useState<string>("");
   const [useCompass, setUseCompass] = useState<boolean>(false);
-  // const [isDark, setIsDarkMode] = useState<boolean>(false);
 
   const [curBuildingPoly, setCurBuildingPoly] =
     useState<GeoJSONFeatureCollection | null>(null);
@@ -174,7 +176,35 @@ export default function NavigationMap(): JSX.Element {
 
   const { isDark, toggleTheme } = useAppTheme();
 
-  const stageDetails =
+const { 
+        data: session, 
+        error, //error object
+    } = authClient.useSession() 
+
+  
+const [isAdmin, setIsAdmin] = useState(false)
+
+async function userInit(userId: string) {
+  const rows = await db
+    .select({ isAdmin: users.isAdmin })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+
+  const user = rows[0]
+  setIsAdmin(user?.isAdmin ?? false)
+}
+
+
+useEffect(() => {
+  if (!session.user.id || error) return
+  void userInit(session.user.id)
+}, [session])
+
+
+
+
+    const stageDetails =
     STAGE_DETAILS[mapStage] ?? STAGE_DETAILS[MAP_STAGES.IDLE];
 
   const mapStyleUrl = isDark
@@ -1017,13 +1047,15 @@ export default function NavigationMap(): JSX.Element {
 
   const { toggleSidebar } = useSidebar();
 
+
+
   /** ---------------- Render ---------------- */
 
   return (
     <div className="relative h-screen w-full bg-background text-foreground">
       {/* Top brand + search bar */}
       <div className="absolute inset-x-2 top-3 z-30 md:left-1/2 md:w-[720px] md:-translate-x-1/2">
-        <div className="flex w-full items-stretch gap-2">
+        <div className="flex w-full items-stretch gap-2 justify-items-center">
           <div
             className={`flex flex-[1] items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
               transition transform hover:scale-[1.03] active:scale-95`}
@@ -1064,7 +1096,16 @@ export default function NavigationMap(): JSX.Element {
               </select>
             </div>
           </div>
-          <Link href="/account/login">
+          {session?
+<div
+              className={`flex flex-[1] h-full  w-full items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
+              transition transform hover:scale-[1.03] active:scale-95`}
+            >
+              <ProfileOptions  session={session}/>
+            </div>
+          
+        :
+        <Link href="/account/login">
             <div
               className={`flex flex-[1] h-full  w-full items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
               transition transform hover:scale-[1.03] active:scale-95`}
@@ -1072,6 +1113,8 @@ export default function NavigationMap(): JSX.Element {
               <IconLogin2 size={35} />
             </div>
           </Link>
+          }
+          
         </div>
       </div>
 
@@ -1113,6 +1156,7 @@ export default function NavigationMap(): JSX.Element {
         </div>
       </div>
 
+      {/* admin pages */}
       <div className="absolute flex flex-col inset-x-3 top-40 z-30 space-y-3 md:left-1/2 md:-translate-x-1/2">
         <Link href="/route-editor">
           <button
