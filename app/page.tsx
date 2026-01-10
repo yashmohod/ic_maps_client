@@ -1,8 +1,6 @@
 // T
 // src/app/NavigationMap.tsx
 "use client";
-import db from "../db/index.ts"
-import {user} from "../db/schema.ts"
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import Image from "next/image";
 import React, { useRef, useState, useMemo, useEffect, type JSX } from "react";
@@ -34,12 +32,12 @@ import {
   IconArrowsMinimize,
   IconLogin2,
 } from "@tabler/icons-react";
-import ProfileOptions from "../components/profileOptions.tsx"
+import ProfileOptions from "../components/profileOptions"
 import NavModeMap from "../components/NavMode";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { authClient,type Session } from "@/lib/auth-client"
+import { authClient, type Session } from "@/lib/auth-client"
 /** ---------------- Types ---------------- */
 
 type LngLat = { lng: number; lat: number };
@@ -78,9 +76,9 @@ type GeoJSONFeatureCollection = {
     type: "Feature";
     properties: Record<string, any>;
     geometry:
-      | { type: "Point"; coordinates: [number, number] }
-      | { type: "LineString"; coordinates: [number, number][] }
-      | { type: "Polygon"; coordinates: [Array<[number, number]>] };
+    | { type: "Point"; coordinates: [number, number] }
+    | { type: "LineString"; coordinates: [number, number][] }
+    | { type: "Polygon"; coordinates: [Array<[number, number]>] };
   }>;
 };
 
@@ -176,35 +174,33 @@ export default function NavigationMap(): JSX.Element {
 
   const { isDark, toggleTheme } = useAppTheme();
 
-const { 
-        data: session, 
-        error, //error object
-    } = authClient.useSession() 
-
-  
-const [isAdmin, setIsAdmin] = useState(false)
-
-async function userInit(userId: string) {
-  const rows = await db
-    .select({ isAdmin: users.isAdmin })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
-
-  const user = rows[0]
-  setIsAdmin(user?.isAdmin ?? false)
-}
+  const {
+    data: session,
+    error, //error object
+  } = authClient.useSession()
 
 
-useEffect(() => {
-  if (!session.user.id || error) return
-  void userInit(session.user.id)
-}, [session])
+  // const [curUser, setCurUser] = useState<User>();
+
+  async function userInit(userId: string) {
+
+    let resp = await fetch("/api/user/")
+    console.log("resp", resp?.curUser)
+    // let temp = await getUser(userId)
+    // console.log(temp)
+    // setCurUser(temp);
+  }
+
+
+  useEffect(() => {
+    if (!session || error) return
+    void userInit(session.user.id)
+  }, [session])
 
 
 
 
-    const stageDetails =
+  const stageDetails =
     STAGE_DETAILS[mapStage] ?? STAGE_DETAILS[MAP_STAGES.IDLE];
 
   const mapStyleUrl = isDark
@@ -369,8 +365,8 @@ useEffect(() => {
           typeof e.webkitCompassHeading === "number"
             ? e.webkitCompassHeading
             : typeof e.alpha === "number"
-            ? 360 - e.alpha
-            : null;
+              ? 360 - e.alpha
+              : null;
 
         if (heading != null && !Number.isNaN(heading)) {
           deviceHeadingRef.current = (heading + 360) % 360;
@@ -688,8 +684,8 @@ useEffect(() => {
       const pathKeys: string[] = Array.isArray(resp?.path)
         ? resp.path
         : resp?.path instanceof Set
-        ? [...resp.path]
-        : [];
+          ? [...resp.path]
+          : [];
 
       if (pathKeys.length === 0) {
         toast.error("No route found for that selection.");
@@ -739,8 +735,8 @@ useEffect(() => {
     const pathKeys: string[] = Array.isArray(resp?.path)
       ? resp.path
       : resp?.path instanceof Set
-      ? [...resp.path]
-      : [];
+        ? [...resp.path]
+        : [];
 
     if (pathKeys.length === 0) return toast.error("No route found.");
 
@@ -1096,25 +1092,25 @@ useEffect(() => {
               </select>
             </div>
           </div>
-          {session?
-<div
-              className={`flex flex-[1] h-full  w-full items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
-              transition transform hover:scale-[1.03] active:scale-95`}
-            >
-              <ProfileOptions  session={session}/>
-            </div>
-          
-        :
-        <Link href="/account/login">
+          {session ?
             <div
               className={`flex flex-[1] h-full  w-full items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
               transition transform hover:scale-[1.03] active:scale-95`}
             >
-              <IconLogin2 size={35} />
+              <ProfileOptions session={session} />
             </div>
-          </Link>
+
+            :
+            <Link href="/account/login">
+              <div
+                className={`flex flex-[1] h-full  w-full items-center justify-center rounded-[25px] border ${borderMutedClass} ${surfacePanelClass} px-2 py-1 shadow-xl backdrop-blur
+              transition transform hover:scale-[1.03] active:scale-95`}
+              >
+                <IconLogin2 size={35} />
+              </div>
+            </Link>
           }
-          
+
         </div>
       </div>
 
@@ -1438,7 +1434,7 @@ function makeCircleGeoJSON(
     const brng = (i * 2 * Math.PI) / points;
     const lat2 = Math.asin(
       Math.sin(latRad) * Math.cos(d) +
-        Math.cos(latRad) * Math.sin(d) * Math.cos(brng)
+      Math.cos(latRad) * Math.sin(d) * Math.cos(brng)
     );
     const lon2 =
       lon +

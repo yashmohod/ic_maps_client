@@ -12,6 +12,15 @@
 import apiClient from "./apiClient";
 
 /** -----------------------------
+ *  user (Account) functions
+ *  ----------------------------- */
+
+export const getUser = async (id: string) => {
+  // old: GET /building/nodesget?id=...
+  return apiClient.get(`/api/user?id=${encodeURIComponent(id)}`);
+};
+
+/** -----------------------------
  *  Editor (Map) functions
  *  ----------------------------- */
 
@@ -230,3 +239,5 @@ export const getNearestBlueLightPath = async (lat: number, lng: number) => {
     )}&lng=${encodeURIComponent(String(lng))}`
   );
 };
+
+

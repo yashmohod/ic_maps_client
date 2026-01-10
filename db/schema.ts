@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { relations, sql,InferSelectModel  } from "drizzle-orm";
 import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
@@ -109,3 +109,5 @@ export const accountRelations = relations(account, ({ one }) => ({
 }));
 
 export const schema = { user, session, account, verification };
+
+export type User = InferSelectModel<typeof user>;
